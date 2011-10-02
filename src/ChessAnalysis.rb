@@ -10,15 +10,21 @@ class ChessAnalysis
     boardPlayers[:K] = nil
     
     #for each player, generate a list of all places they can attack
-    
+    kingsInCheck = []
     boardPlayers.each{|playerType, playerAddresses|
       playerAddresses.each{|address|
         possibleMoves = generateMoves(player, address)
         
+        if player.match('[a-z]') and possibleMoves.contains(locationOf_K)
+          kingsInCheck.push(locationOf_K)
+        end
+        if player.match('[A-Z]') and possibleMoves.contains(locationOf_k)
+          kingsInCheck.push(locationOf_k)
+        end
       }
         
     }
-    
+    return kingsInCheck
   end
 
   def getConfigByPlayer(boardConfig)
