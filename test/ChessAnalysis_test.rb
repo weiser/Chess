@@ -17,16 +17,16 @@ class ChessAnalysis_test < Test::Unit::TestCase
     ca =  ChessAnalysis.new
     kingsInCheck = ca.analyzeBoard(getBoardConfig1())
   
-    assert_equal kingsInCheck[:k].nil?, true
-    assert_equal kingsInCheck[:K][:p], [7,2]
+    assert_equal kingsInCheck[:k].empty?, true
+    assert_equal kingsInCheck[:K].empty?, false
   end
   
   def testAddressOfKings
     ca = ChessAnalysis.new
     boardConfig = ca.getConfigByPlayer(getBoardConfig1())
     
-    assert_equal boardConfig[:k][0] == [1,3], true
-    assert_equal boardConfig[:K][0] == [8,1], true
+    assert_equal boardConfig[:k][0],  [1,3]
+    assert_equal boardConfig[:K][1],  [8,1]
   end
   
 end
