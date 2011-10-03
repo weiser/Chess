@@ -1,7 +1,39 @@
 require 'set'
 
 class ChessAnalysis
-  def analyzeBoard(boardConfig)
+  def determineKingsInCheckmate(boardConfig)
+    boardPlayers = getConfigByPlayer(boardConfig)
+
+    #a king is in checkmate if they are in check and have no where to run.
+    kingsInCheck = determineKingsInCheck(boardConfig)
+
+    #get the list of all the places where the king is in checkmate at.  if there is a place where the kings is not in checkmate at, return nil
+    unionCheckmatePositions!(kingsInCheck,boardPlayers,:k)
+    unionCheckmatePositions!(kingsInCheck,boardPlayers,:K)
+    
+    return kingsInCheck
+  end
+
+  def unionCheckmatePositions!(kingsInCheck,boardPlayers, kingType)
+    if kingsInCheck[kingType] != {}
+      possibleMoves = generateMoves(kingType, boardPlayers[kingType][0])
+      possibleMoves.each{|move|
+        checkmatePositions = discoverKingsInCheck(boardPlayers, move, move)
+        if checkmatePositions[kingType] != {}
+          checkmatePositions[kingType].keys.each{|playerType|
+            if kingsInCheck[kingType][playerType] = {}
+            kingsInCheck[kingType][playerType] = checkmatePositions[kingType][playerType]
+          else
+            kingsInCheck[kingType][playerType] |= checkmatePositions[kingType][playerType]
+          end
+          }
+        end
+      }
+    end
+  end
+  #returns a hash, {:k=>{:playerType => [list of addresses the player type puts the kings in check]}, :K=>{:playerType => [list of addresses the player type puts the kings in check]}}
+  #The value of hash[:k] will be {} if the king is not in check.
+  def determineKingsInCheck(boardConfig)
     boardPlayers = getConfigByPlayer(boardConfig)
 
     locationOf_k = boardPlayers[:k][0]
@@ -12,28 +44,32 @@ class ChessAnalysis
     boardPlayers.delete(:K)
 
     #for each player, generate a list of all places they can attack
-    kingsInCheck = {:k => {}, :K => {}}
+    kingsInCheck = discoverKingsInCheck(boardPlayers, locationOf_k, locationOf_K)
+    return kingsInCheck
+  end
+
+  #based on a board configuration and the location of each of the kings, this method returns a hash which contains a hash of all player types which put the king in check and the address of the player
+  def discoverKingsInCheck(boardPlayers, locationOf_k, locationOf_K)
+    kingsInCheck = {:k=>{}, :K=>{}}
     boardPlayers.each{|playerType, playerAddresses|
       playerAddresses.each{ |address|
         possibleMoves = generateMoves(playerType, address)
 
         if playerType.to_s.match('[a-z]') and possibleMoves.include? locationOf_K
           if kingsInCheck[:K][playerType].nil?
-            puts "K in check from #{address}"
             kingsInCheck[:K][playerType] = [address]
           else
-            kingsInCheck[:K][playerType].push(address)
+          kingsInCheck[:K][playerType].push(address)
           end
         end
         if playerType.to_s.match('[A-Z]') and possibleMoves.include? locationOf_k
-        if kingsInCheck[:k][playerType].nil?
+          if kingsInCheck[:k][playerType].nil?
             kingsInCheck[:k][playerType] = [address]
           else
-            kingsInCheck[:k][playerType].push(address)
+          kingsInCheck[:k][playerType].push(address)
           end
         end
       }
-
     }
     return kingsInCheck
   end
@@ -65,14 +101,14 @@ class ChessAnalysis
       }
     #bishops attack on diagonal
     when :B, :b
-      
+
       (1..8).each{|n|
         moves.unshift(makeMove(address, n, n))
         moves.unshift(makeMove(address, n, -n))
         moves.unshift(makeMove(address, -n, n))
         moves.unshift(makeMove(address, -n, -n))
       }
-      
+
     #queens attack on row, column or diagonal
     when :Q, :q
       (1..8).each{|column|
@@ -87,10 +123,20 @@ class ChessAnalysis
         moves.unshift(makeMove(address, -n, n))
         moves.unshift(makeMove(address, -n,-n))
       }
+    #kings attack one in any direction
+    when :k, :K
+      moves.unshift(makeMove(address, 1, 1))
+      moves.unshift(makeMove(address, 1, -1))
+      moves.unshift(makeMove(address, 1, 0))
+      moves.unshift(makeMove(address, 0,1))
+      moves.unshift(makeMove(address, 0,-1))
+      moves.unshift(makeMove(address, -1, 1))
+      moves.unshift(makeMove(address, -1, -1))
+      moves.unshift(makeMove(address, -1, 0))
     end
     removeInvalidMoves(moves)
   end
-  
+
   def makeMove(address, rowOffset, colOffset)
     return [address[0]+rowOffset, address[1]+colOffset]
   end
