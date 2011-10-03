@@ -18,9 +18,9 @@ class ChessAnalysis_test < Test::Unit::TestCase
     ca =  ChessAnalysis.new
     kingsInCheck = ca.analyzeBoard(getBoardConfig1())
 
-    assert_equal kingsInCheck[:k].nil?, false
+    assert_equal kingsInCheck[:k][:B],[[4,6]]
 
-    assert_equal kingsInCheck[:K][:p] == [[7,2]], true
+    assert_equal kingsInCheck[:K][:p], [[7,2]]
   end
 
   def testAddressOfKings

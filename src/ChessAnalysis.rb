@@ -65,12 +65,14 @@ class ChessAnalysis
       }
     #bishops attack on diagonal
     when :B, :b
+      puts "found bishop at #{address}"
       (1..8).each{|n|
-        moves.unshift(makeMove(address, address[0]+n, address[1]+n))
-        moves.unshift(makeMove(address, address[0]+n, address[1]-n))
-        moves.unshift(makeMove(address, address[0]-n, address[1]+n))
-        moves.unshift(makeMove(address, address[0]-n, address[1]-n))
+        moves.unshift(makeMove(address, n, n))
+        moves.unshift(makeMove(address, n, -n))
+        moves.unshift(makeMove(address, -n, n))
+        moves.unshift(makeMove(address, -n, -n))
       }
+      puts "Bishop moves = #{moves}"
     #queens attack on row, column or diagonal
     when :Q, :q
       (1..8).each{|column|
@@ -80,10 +82,10 @@ class ChessAnalysis
         moves.unshift(makeMove(address, row, address[1]))
       }
       (1..8).each{|n|
-        moves.unshift(makeMove(address, address[0]+n, address[1]+n))
-        moves.unshift(makeMove(address, address[0]+n, address[1]-n))
-        moves.unshift(makeMove(address, address[0]-n, address[1]+n))
-        moves.unshift(makeMove(address, address[0]-n, address[1]-n))
+        moves.unshift(makeMove(address, n, n))
+        moves.unshift(makeMove(address, n, -n))
+        moves.unshift(makeMove(address, -n, n))
+        moves.unshift(makeMove(address, -n,-n))
       }
     end
     removeInvalidMoves(moves)
