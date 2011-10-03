@@ -9,24 +9,26 @@ class ChessAnalysis_test < Test::Unit::TestCase
     ".R...B..\n"+
     "........\n"+
     "........\n"+
-    "PPPPPPPP\n"+
+    "PpPPPPPP\n"+
     "K.......\n"
   end
+
   def testKingInCheck
-    
+
     ca =  ChessAnalysis.new
     kingsInCheck = ca.analyzeBoard(getBoardConfig1())
-  
-    assert_equal kingsInCheck[:k].empty?, true
-    assert_equal kingsInCheck[:K].empty?, false
+
+    assert_equal kingsInCheck[:k].nil?, false
+
+    assert_equal kingsInCheck[:K][:p] == [[7,2]], true
   end
-  
+
   def testAddressOfKings
     ca = ChessAnalysis.new
     boardConfig = ca.getConfigByPlayer(getBoardConfig1())
-    
+
     assert_equal boardConfig[:k][0],  [1,3]
-    assert_equal boardConfig[:K][1],  [8,1]
+    assert_equal boardConfig[:K][0],  [8,1]
   end
-  
+
 end

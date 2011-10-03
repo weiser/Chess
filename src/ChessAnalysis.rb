@@ -12,16 +12,25 @@ class ChessAnalysis
     boardPlayers.delete(:K)
 
     #for each player, generate a list of all places they can attack
-    kingsInCheck = {:k => [], :K => []}
+    kingsInCheck = {:k => {}, :K => {}}
     boardPlayers.each{|playerType, playerAddresses|
       playerAddresses.each{ |address|
         possibleMoves = generateMoves(playerType, address)
 
         if playerType.to_s.match('[a-z]') and possibleMoves.include? locationOf_K
-        kingsInCheck[:K].push(locationOf_K)
+          if kingsInCheck[:K][playerType].nil?
+            puts "K in check from #{address}"
+            kingsInCheck[:K][playerType] = [address]
+          else
+            kingsInCheck[:K][playerType].push(address)
+          end
         end
         if playerType.to_s.match('[A-Z]') and possibleMoves.include? locationOf_k
-        kingsInCheck[:k].push(locationOf_k)
+        if kingsInCheck[:k][playerType].nil?
+            kingsInCheck[:k][playerType] = [address]
+          else
+            kingsInCheck[:k][playerType].push(address)
+          end
         end
       }
 
